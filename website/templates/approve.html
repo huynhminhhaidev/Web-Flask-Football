@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %} Danh sách trận đấu {% endblock %}
+{% block content %}
+
+<div class="container">
+
+    <section class="section-content py-3">
+        <div class="row">
+            <main class="col-lg-12">
+                <div class="table-responsive table-scroll">
+                    <table class="table styled-table" id="results">
+                        <thead>
+                          <tr>
+                            <th>Tên địa điểm</th>
+                            <th>Tên sân</th>
+                            <th>Loại sân</th>
+                            <th>Ngày đá</th>
+                            <th>Giờ đá</th>
+                            <th>Tổng tiền</th>
+                            <th>Tên người đặt</th>
+                            <th>Chi tiết người đặt</th>
+                            <th>Tình trạng</th>
+                            {% if user.role == 'ChuSan' %}
+                            <th>Tùy chỉnh</th>
+                            {% endif %}
+                            {% if user.role == 'ThanhVien' %}
+                            <th>Hạn thanh toán</th>
+                            <th>Thanh toán</th>
+                            {% endif %}
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for match, time, pitch, users, address in results %}
+                            <tr>
+                                <th> <a class="name-link" href="/address-detail/{{address.id}}">{{address.name}} </a></th>
+                                <td>{{pitch.name}}</td>
+                                <td>{{pitch.kind}}</td>
+                                <td>{{match.date}}</td>
+                                <td>{{time.timeS}} - {{time.timeE}}</td>
+                                <td>{{time.cost}}</td>
+                                <td>{{users.fullname}}</td>
+                                <td class="td-center">
+                                    <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#modaledit{{match.id}}">
+                                        <i style="color: #00775f;" class="fa-xl fa-solid fa-circle-chevron-down"></i>
+                                    </button>
+                                </td>
+                                {% if match.status == 'Chấp nhận' %}
+                                <td class="text-success fw-bold">{{match.status}}</td>
+                                {% endif %}
+                                {% if match.status == 'Chờ duyệt' %}
+                                <td class="text-warning fw-bold">{{match.status}}</td>
+                                {% endif %}
+                                {% if match.status == 'Từ chối' %}
+                                <td class="text-danger fw-bold">{{match.status}}</td>
+                                {% endif %}
+                                {% if match.status == 'Quá hạn' %}
+                                <td class="text-danger fw-bold">{{match.status}}</td>
+                                {% endif %}
+                                {% if match.status == 'Không thanh toán' %}
+                                <td class="text-danger fw-bold">{{match.status}}</td>
+                                {% endif %}
+                                {% if match.status == 'Đã thanh toán' %}
+                                <td class="text-success fw-bold">{{match.status}}</td>
+                                {% endif %}
+                                {% if user.role == 'ChuSan' and match.status == 'Chờ duyệt' %}
+                                <td>
+                                    <a class="btn btn-primary btn-sm mt-2" onclick="var result = confirm('Bạn chắc chắn không?'); if(result) {document.getElementById('lnk{{match.id}}').click();}">Chấp nhận</a>
+                                    <a id="lnk{{match.id}}" href="/updateStatus-yes/{{match.id}}" class="btn btn-primary btn-sm" hidden>Duyệt</a>
+                                    <a class="btn btn-danger btn-sm mt-2" onclick="var result = confirm('Bạn chắc chắn không?'); if(result) {document.getElementById('lnk1{{match.id}}').click();}">Từ chối</a>
+                                    <a id="lnk1{{match.id}}" href="/updateStatus-no/{{match.id}}" class="btn btn-danger btn-sm mt-2" hidden>Từ chối</a>
+                                </td>
+                                {% endif %}
+                                {% if user.role == 'ThanhVien' %}
+                                <td>{{match.datetimePay}}</td>
+                                {% endif %}
+                                {% if user.role == 'ThanhVien' and match.statusPay == 'True' %}
+                                <td>
+                                    <div data-cost="{{time.cost}}" data-idMember="{{user.id}}" data-idMatch="{{match.id}}"  class="btn-paypal" id="paypal-payment-btn{{match.id}}">
+
+                                    </div>
+                                </td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}
+                            </tr>
+                            <div class="modal fade" id="modaledit{{match.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title text-custom fw-bolder" id="staticBackdropLabel">Chi tiết người đặt sân</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form action="" id="see-detail-book-member" method="post">
+                                        <div class="row">
+                                            <div class="col-md-12 mb-2">
+                                                <div class="form-outline">
+                                                    <label for="">Họ tên: </label>
+                                                    <input type="text" class="form-control form-control-sm" value="{{users.fullname}}" disabled/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-2">
+                                                <div class="form-outline">
+                                                    <label for="">Số điện thoại: </label>
+                                                    <input type="tel" disabled class="form-control form-control-sm" value="{{users.phonenumber}}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-2">
+                                                <div class="form-outline">
+                                                    <label for="">Số điện thoại phụ: </label>
+                                                    <input disabled name="phonebackup" type="tel" id="phonebackup" class="form-control form-control-sm"  value="{{match.phonebackup}}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-2">
+                                                <div class="form-outline">
+                                                    <label for="">Email: </label>
+                                                    <input type="email" class="form-control form-control-sm" value="{{users.email}}" disabled/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mb-2">
+                                                <div class="form-outline">
+                                                    <label for="">Giờ đàm phán: </label>
+                                                    <textarea disabled class="form-control form-control-sm" id="note" rows="3" >{{match.note}}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                      </form>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </section>
+    
+</div>
+
+<script src="https://www.paypal.com/sdk/js?client-id=AYn6x0DdbUlO3VWvxKSqIDQy-YiivCONgl44ybB3739zTiHc47TINEFiYhGFbG1SwiRXJPITyFjF8gnB&disable-funding=credit,card"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+
+    array_idMatch = [];
+    array_cost = [];
+
+    $( ".btn-paypal" ).each(function( index ) {
+        id_member = $( this ).attr('data-idMember') ;
+        id_match = $( this ).attr('data-idMatch') ;
+        cost = $( this ).attr('data-cost') ;
+        array_idMatch.push(id_match);
+        array_cost.push(cost)
+        paypal.Buttons({
+            style: {
+                color:'gold',
+                shape:'pill',
+            },
+            createOrder:function(data, actions){
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: (parseFloat(array_cost[index])*0.5)*0.04,
+                            currency_code: "USD",
+                        }
+                    }]
+                })
+            },
+            onApprove: function(data, actions){
+                return actions.order.capture().then(function(details){
+                    $.post('/bill', {idMatch: array_idMatch[index], idMember: id_member, cost: (parseFloat(array_cost[index])*0.5).toString()}, function(data){
+                        location.reload();
+                    })
+                })
+            },
+        }).render('#'+$( this ).attr("id"));
+
+    });
+
+</script>
+{% endblock %}

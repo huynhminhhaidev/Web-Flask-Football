@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %} Đăng ký {% endblock %}
+{% block content %}
+<div class="custom-login-page h-100 pb-5">
+  <div class="container h-100 pb-5">
+    <div class="login_name_wrapper">
+        <div class="d-flex justify-content-center">Đăng ký</div>
+    </div>
+    <div class="d-flex justify-content-center h-50" >
+      <div class="user_card pb-5">
+          <div class="d-flex justify-content-center">
+              <div class="login_logo_container"> <img src="/static/images/Soccerball_shade.svg.png" class="login_logo" alt="Logo"> </div>
+          </div>
+          <div class="d-flex justify-content-center form_container">
+              <form style="width: 320px" method="post" action="" id="signup-form">
+                <div id="msgcont" class="d-flex justify-content-center" style="display:none!important">
+                    <div id="msg" class="alert alert-danger py-1 px-2" role="alert"></div>
+                </div>
+                
+                <div class="input-group mb-3">
+                  <div class="input-group-append"> <span class="input-group-text"><i class="fa-solid fa-tag"></i></span> </div>
+                  {% if fullname == null %}
+                    <input id="fullname" type="text" name="fullname" class="form-control input_user" placeholder="Họ và tên">
+                  {% else %}
+                    <input id="fullname" type="text" name="fullname" value="{{fullname}}" class="form-control input_user" placeholder="Họ và tên">
+                  {% endif %}
+                </div>
+
+                <div class="input-group mb-3">
+                  <div class="input-group-append"> <span class="input-group-text"><i class="fa-solid fa-cake-candles"></i></span> </div>
+                  {% if birthday == null %}
+                    <input id="birthday" type="text" name="birthday" class="form-control input_user" placeholder="Ngày sinh">
+                  {% else %}
+                    <input id="birthday" type="text" name="birthday" value="{{birthday}}" class="form-control input_user" placeholder="Ngày sinh">
+                  {% endif %}
+                </div>
+
+                <div class="input-group mb-3">
+                  <div class="input-group-append"> <span class="input-group-text"><i class="fa-solid fa-phone"></i></span> </div>
+                  {% if phone == null %}
+                    <input id="phone" type="text" name="phone" class="form-control input_user" placeholder="Số điện thoại">
+                  {% else %}
+                    <input id="phone" type="text" name="phone" value="{{phone}}" class="form-control input_user" placeholder="Số điện thoại">
+                  {% endif %}
+                </div>
+
+                <div class="input-group mb-3">
+                  <div class="input-group-append"> <span class="input-group-text"><i class="fa-solid fa-at"></i></span> </div>
+                  {% if email == null %}
+                    <input id="email" type="text" name="email" class="form-control input_user" placeholder="abc@gmail.com" >
+                  {% else %}
+                    <input id="email" type="text" name="email" value="{{email}}" class="form-control input_user" placeholder="abc@gmail.com" >
+                  {% endif %}
+                </div>
+
+                <div class="input-group mb-3 d-flex justify-content-center align-items-center">
+                  <div class="btn-group">
+                    <input value="male" type="radio" class="btn-check" name="gender" id="male" autocomplete="off" checked />
+                    <label class="ps-4 pe-4 btn btn-secondary btn-sm custom-btn" for="male">Nam</label>
+                  
+                    <input value="female" type="radio" class="btn-check" name="gender" id="female" autocomplete="off" />
+                    <label class="ps-4 pe-4 btn btn-secondary btn-sm custom-btn" for="female">Nữ</label>
+                  
+                    <input value="other" type="radio" class="btn-check" name="gender" id="other" autocomplete="off" />
+                    <label class="ps-4 pe-4 btn btn-secondary btn-sm custom-btn" for="other">Khác</label>
+                  </div>
+                </div>
+
+                <div class="input-group mb-4 d-flex justify-content-center align-items-center">
+                  <div class="btn-group">
+                    <input value="ThanhVien" type="radio" class="btn-check" name="role" id="ThanhVien" autocomplete="off" checked />
+                    <label class="ps-4 pe-4 btn btn-secondary btn-sm custom-btn" for="ThanhVien">Thành viên</label>
+                  
+                    <input value="ChuSan" type="radio" class="btn-check" name="role" id="ChuSan" autocomplete="off" />
+                    <label class="ps-4 pe-4 btn btn-secondary btn-sm custom-btn" for="ChuSan">Chủ sân</label>
+                  </div>
+                </div>
+
+                {% if mess != null %}
+                <p class="text-center" style="color: red; font-weight: bold;">{{mess}}</p>
+                {% endif %}
+                <div class="d-flex justify-content-center mt-3 login_container">
+                    <button type="submit" name="button" class="btn login_btn fw-bold">Đăng ký</button>
+                </div>
+              </form>
+          </div>
+          <div class="mt-4">
+              <div class="d-flex justify-content-center links">
+                <a href="/login">Đăng nhập </a> &nbsp; or &nbsp;
+                <a href="/forget-password"> Quên mật khẩu</a>
+              
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

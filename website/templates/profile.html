@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %} Tài khoản {% endblock %}
+{% block content %}
+<div class="container">
+
+    <section class="section-content py-3">
+        <div class="row">
+            {% include 'sidebar.html' %}
+            <main class="col-lg-9 pt-4">
+            
+                <form action="{{url_for('crud.updateProfile')}}" id="register-form" method="post">
+  
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+      
+                        <div class="form-outline">
+                            <input type="hidden"  name="id" value="{{user.id}}">
+                          <label class="form-label" for="fullname">Họ tên: </label>
+                          <input name="fullname" type="text" id="fullname" class="form-control form-control-md" value="{{user.fullname}}"/>
+                        </div>
+      
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <span>Giới tính: </span>
+                        
+                        <div>
+                            <input
+                              class="form-check-input"
+                              type="radio"
+                              name="gender"
+                              id="maleGender"
+                              value="male"
+                              checked
+                            />
+                            <label class="form-label" for="maleGender">Nam</label>
+                        </div>
+    
+                        <div>
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="gender"
+                            id="femaleGender"
+                            value="female"
+                          />
+                          <label class="form-label" for="femaleGender">Nữ</label>
+                        </div>
+      
+                        <div>
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="gender"
+                            id="otherGender"
+                            value="other"
+                          />
+                          <label class="form-label" for="otherGender">Khác</label>
+                        </div>
+      
+                      </div>
+                    </div>
+      
+                    <div class="row">
+                      <div class="col-md-6 mb-3 d-flex align-items-center">
+      
+                        <div class="form-outline datepicker w-100">
+                          <label for="birthdayDate" class="form-label">Ngày sinh: </label>
+                          <input name="birthday" type="text" class="form-control form-control-md" id="birthdayDate" value="{{user.birthday}}"/>
+                        </div>
+      
+                      </div>
+                      <div class="col-md-6 mb-3 ">
+      
+                        <div class="form-outline">
+                          <label class="form-label" for="phoneNumber">Số điện thoại: </label>
+                          <input name="phone" type="tel" id="phoneNumber" class="form-control form-control-md" value="{{user.phonenumber}}" />
+                        </div>
+      
+                      </div>
+                      
+                    </div>
+      
+                    <div class="row">
+                      <div class="col-md-6 mb-3 pb-2">
+      
+                        <div class="form-outline">
+                          <label class="form-label" for="emailAddress">Email: </label>
+                          <input hidden name="email" type="email" id="emailAddress" class="form-control form-control-md" value="{{user.email}}" />
+                          <input disabled type="email" class="form-control form-control-md" value="{{user.email}}" />
+                        </div>
+      
+                      </div>
+                      <div class="col-md-6 mb-3 pb-2">
+                        
+                        <div class="form-outline">
+                            <label class="form-label" for="role">Vai trò: </label>
+                            <input disabled name="role" type="text" id="role" class="form-control form-control-md" value="{{user.role}}"/>
+                          </div>
+
+                      </div>
+                      
+                    </div>
+                    
+                    <div class="row">
+                      <div class="col-md-6 mb-3 pb-2">
+      
+                        <div class="form-outline">
+                          <label class="form-label" for="linkFb">Link FaceBook: </label>
+                          <input name="linkFB" type="text" id="linkFb" class="form-control form-control-md" value="{{user.linkFB}}" />
+                        </div>
+      
+                      </div>
+                      <div class="col-md-6 mb-3 pb-2">
+
+                      </div>
+                      
+                    </div>
+    
+                    <div class="mt-2 pt-2">
+                      <input class="btn custom-btn btn-md" type="submit" value="Cập nhật" />
+                    </div>
+      
+                </form>
+            
+            </main>
+        </div>
+    </section>
+    
+</div>
+{% endblock %}

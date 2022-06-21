@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sora">
+    <link rel="icon" href="/static/images/Soccerball_shade.svg.png" type="icon.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='stylesheets/style.css') }}">
+    <title>{% block title %} {% endblock %}</title>
+</head>
+<header>
+  <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-white bg-white">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <div class="pre-logo"></div>
+          <div class="logo"></div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-md-auto gap-2">
+            {% if user != null %}
+              {% if user.role == 'ThanhVien' %}
+              <li class="nav-item rounded">
+                <a class="nav-link text-dark fw-bolder d-flex justify-content-center align-items-center" aria-current="page" href="/approve"><div class="logo-match me-1"></div> Trận đấu của bạn</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link text-dark fw-bolder d-flex justify-content-center align-items-center" aria-current="page" href="/list-bill"><div class="logo-invoice"></div> Hóa đơn</a>
+              </li>
+              {% endif %}
+              {% if user.role == 'Admin' %}
+              <li class="nav-item rounded">
+                <a class="nav-link text-dark fw-bolder d-flex justify-content-center align-items-center" aria-current="page" href="/management-user"><div class="logo-users me-1"></div> Danh sách người dùng</a>
+              </li>
+              {% endif %}
+              {% if user.role == 'ChuSan' %}
+              <li class="nav-item rounded">
+                <a class="nav-link text-dark fw-bolder d-flex justify-content-center align-items-center" aria-current="page" href="/approve"><div class="logo-match me-1"></div> Quản lý trận đấu</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link text-dark fw-bolder d-flex justify-content-center align-items-center" aria-current="page" href="/management-address"><div class="logo-address"></div> Quản lý địa điểm</a>
+              </li>
+              {% endif %}
+            {% endif %}
+            <li class="nav-item rounded">
+                {% if user != null %}
+                  {% if user.fullname != null %}
+                      <a class="nav-link text-dark fw-bolder d-flex justify-content-center align-items-center" aria-current="page" href="/profile">
+                        <div class="logo-user me-1"></div>
+                        {{user.fullname}}
+                      </a> 
+                  {% else %}
+                    <a class="nav-link text-dark fw-bolder d-flex justify-content-center align-items-center" aria-current="page" href="/login">
+                      <div class="logo-user me-1"></div>
+                      Đăng nhập
+                    </a>
+                  {% endif %}
+                {% endif %}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+<body>
+  <div class="container-fluid">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+          {% for category, message in messages %}
+          {% if category == "error" %}
+          <div class="alert alert-danger alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+          {% else %}
+          <div class="alert alert-success alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+          {% endif %}
+  
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+  
+    {% block content %} {% endblock %}
+  </div>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script>
+</script>
+</html>

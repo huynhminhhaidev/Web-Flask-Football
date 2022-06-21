@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %} Quản lý người dùng {% endblock %}
+{% block content %}
+<div class="container">
+
+    <section class="section-content py-3">
+        <div class="row">
+            <main class="col-lg-12">
+                <div class="table-responsive table-scroll">
+                    <table class="table styled-table">
+                        <thead>
+                          <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Tên thành viên</th>
+                            <th scope="col">Giới tính</th>
+                            <th scope="col">Ngày sinh</th>
+                            <th scope="col">Số điện thoại</th>
+                            <th scope="col">Địa chỉ email</th>
+                            <th scope="col">Vai trò</th>
+                            <th scope="col">Tùy chỉnh</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in users %}
+                            {% if i.fullname != 'admin' %}
+                            
+                            <tr>
+                                <th scope="row">{{i.id}}</th>
+                                <td>{{i.fullname}}</td>
+                                <td>{{i.gender}}</td>
+                                <td>{{i.birthday}}</td>
+                                <td>{{i.phonenumber}}</td>
+                                <td>{{i.email}}</td>
+                                <td>{{i.role}}</td>
+                                <td>
+                                  <button data-id="{{i.id}}" data-role="{{i.role}}" type="button" class="btn-update-user btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modaledit{{i.id}}">
+                                    <i class="fa-solid fa-pen"></i>
+                                  </button>
+                                  <a class="btn btn-danger btn-sm" onclick="var result = confirm('Bạn muốn xóa {{i.name}} không?'); if(result) {document.getElementById('lnk{{i.id}}').click();}"><i class="fa-solid fa-trash"></i></a>
+                                  <a id="lnk{{i.id}}" href="/deleteUser/{{i.id}}" hidden>Xóa</a>
+                                </td>
+                            </tr>
+                
+                            <!-- Modal -->
+                            <div class="modal fade" id="modaledit{{i.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title fw-bolder text-custom" id="staticBackdropLabel">Chỉnh sửa thông tin thành viên</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <form action="{{url_for('crud.updateUser')}}" id="update-user-form" method="post">
+                  
+                                      <div class="row">
+                                        <div class="col-md-6 mb-3">
+                        
+                                          <div class="form-outline">
+                                            <input type="hidden"  name="id" value="{{i.id}}">
+                                            <label class="form-label" for="fullname">Họ tên: </label>
+                                            <input name="fullName" type="text" id="fullname" class="form-control form-control-md" value="{{i.fullname}}" />
+                                            <span class="form-message" style="color: red;"></span>
+                                          </div>
+                        
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3 ">
+                        
+                                          <div class="form-outline">
+                                            <label class="form-label" for="phoneNumber">Số điện thoại: </label>
+                                            <input disabled name="phoneNumber" type="tel" id="phoneNumber" class="form-control form-control-md" value="{{i.phonenumber}}"/>
+                                            <span class="form-message" style="color: red;"></span>
+                                          </div>
+                        
+                                        </div>
+                                      </div>
+                        
+                                      <div class="row">
+                                        <div class="col-md-6 mb-3 d-flex align-items-center">
+                        
+                                          <div class="form-outline datepicker w-100">
+                                            <label for="birthdayDate" class="form-label">Ngày sinh: </label>
+                                            <input
+                                              name="birthdayDate"
+                                              type="text"
+                                              class="form-control form-control-md"
+                                              id="birthdayDate"
+                                              value="{{i.birthday}}"
+                                            />
+                                            <span class="form-message" style="color: red;"></span>
+                                          </div>
+                        
+                                        </div>
+                                        
+                                      </div>
+                        
+                                      <div class="row">
+                                        <div class="col-md-6 mb-3 pb-2">
+                        
+                                          <div class="form-outline">
+                                            <label class="form-label" for="emailAddress">Email: </label>
+                                            <input disabled name="emailAddress" type="email" id="emailAddress" class="form-control form-control-md" value="{{i.email}}"/>
+                                            <span class="form-message" style="color: red;"></span>
+                                          </div>
+                        
+                                        </div>
+                                        <div class="col-md-6 mb-3 pb-2">
+                        
+                                          <select name="role" id="select-role{{i.id}}" class="select form-control-md">
+                                            <option value="0" disabled>Chọn vai trò</option>
+                                            <option value="ThanhVien">Thành viên</option>
+                                            <option value="ChuSan">Chủ sân</option>
+                                          </select>
+                                          <label class="form-label select-label">Chọn vai trò</label>
+                        
+                                        </div>
+                                        
+                                      </div>
+                                      <div class="mt-2 pt-2">
+                                        <input class="btn btn-md custom-btn" type="submit" value="Update" />
+                                      </div>
+                        
+                                    </form>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            {% endif %}
+                </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </section>
+    
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+
+  $( ".btn-update-user" ).click(function() {
+    idAddress = $( this ).data('id');
+    role = $(this).data("role")
+    $("#select-role" + idAddress).val(role).change()
+  });
+
+</script>
+{% endblock %}

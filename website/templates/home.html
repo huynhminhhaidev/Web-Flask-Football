@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %} Trang chủ {% endblock %}
+{% block content %}
+
+<div class="container-fluid p-4">
+  {% if id_city != '' %}
+    <input hidden class="id_city" type="text" value="{{id_city}}">
+  {% endif %}
+  {% if id_district != '' %}
+    <input hidden class="id_district" type="text" value="{{id_district}}">
+  {% endif %}
+  {% if kind != '' %}
+    <input hidden class="kind" type="text" value="{{kind}}">
+  {% endif %}
+  <!-- <hr> -->
+  <form action="{{url_for('views.home')}}" method="post" class="mt-4 mb-4">
+    <div class="input-group d-flex justify-content-center pt-3 section-search">
+      <div class="row mb-3">
+        <div class="col-md-3 mb-2">
+            <select name="city" class="form-select form-select-md city" aria-label=".form-select-md example">
+                <option value="0" selected>Tỉnh/Thành Phố</option>
+                {% for i in cities %}
+                    <option value="{{i.id}}">{{i.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 mb-2">
+            <select name="district" class="form-select form-select-md district" aria-label=".form-select-md example">
+                <option value="0" selected>Quận/Huyện</option>
+            </select>
+        </div>
+        <div class="col-md-3 mb-2">
+          <select name="kind" class="form-select form-select-md kind" aria-label=".form-select-md example">
+            <option value="0" selected>Loại sân</option>
+            <option value="5">Sân 5 người</option>
+            <option value="7">Sân 7 người</option>
+            <option value="11">Sân 11 người</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-2">
+          {% if search == '' %}
+            <input value="" name="search" id="search-input" type="search" class="form-control form-control-md rounded" placeholder="Tên sân bóng..." aria-label="Search" aria-describedby="search-addon" />
+          {% endif %}
+          {% if search != '' %}
+            <input value="{{search}}" name="search" id="search-input" type="search" class="form-control form-control-md rounded" placeholder="Tên sân bóng..." aria-label="Search" aria-describedby="search-addon" />
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-2 mb-2 ms-2">
+        <button id="search-button" type="submit" class="btn text-dark fw-bold">Tìm kiếm</button>
+      </div>
+    </div>
+  </form>
+  <!-- <hr> -->
+  <p class="fw-bolder fs-5">{{name_upper}}</p>
+  <div class="row">
+    {% for i in addresses %}
+    <div class="d-flex aligns-items-center justify-content-center col-md-6 col-lg-3 p-3">
+        <div class="card box-shadow-card" style="width: 22rem;">
+          <a style="padding: 8px;" href="/address-detail/{{i[0]}}"><img src="https://phuongthanhngoc.com/media/data/phu-kien-san-bong/phu-kien-san-bong.jpg" class="card-img-top" alt="Sunset Over the Sea"/></a>
+          <div class="card-body">
+              <div style="font-weight: bold;" class="card-title pb-1">
+                {{i[1]}}
+              </div>
+              <div class="card-content pb-3">
+                <span>
+                  <i class="fa-solid fa-user"></i>
+                  {{i[2]}} người
+                </span>
+              </div>
+              <a href="/address-detail/{{i[0]}}"><button class="btn btn-sm custom-btn " >&nbsp &nbsp &nbsp &nbsp <i class="fa-solid fa-angles-right"></i> &nbsp &nbsp &nbsp &nbsp</button></a>
+          </div>
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+
+  $(document).ready(function(){
+      $(".city").change(function(){
+          var id = $(".city").val();
+          $.post('/getDistrict', {id: id}, function(data){
+              $(".district").html(data.districts)
+          })
+      })
+  })
+
+  var id_city = $('.id_city').val()
+  var id_district = $('.id_district').val()
+  var kind= $('.kind').val()
+
+
+  $(".city").val(id_city).change();
+  $(".district").val(id_district).change();
+  $(".kind").val(kind).change();
+</script>
+
+{% endblock %}

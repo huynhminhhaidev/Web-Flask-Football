@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% block title %} Trang chủ {% endblock %}
+{% block content %}
+<!-- <hr> -->
+<div class="container-fluid mt-2 pb-5" style="background-color: #f5f5f5;">
+    <div class="heading-address d-flex justify-content-center" style="background-color: white">
+      <div>
+        <p class="fs-1 fw-bolder d-flex justify-content-center align-items-center" style="color: black;">
+        {% if address_detail != null %}
+        {{address_detail.name}}
+        {% endif %}
+        </p>
+        <div class="d-flex justify-content-center align-items-center fw-bolder">
+          <div class="logo-location"></div>
+          <a
+            style="text-decoration: none; color:black"
+            {% if address_detail != null %}
+                href="{{address_detail.linkAddress}}"
+            {%endif%}
+            >
+            {% if address_detail != null%}
+                {{address_detail.address}}
+            {% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- <hr> -->
+    <div class="row mt-5" style="background-color: #f5f5f5;">
+        <div class="col-lg-4 col-md-12">
+          <div class="pt-3">
+            <div class="card box-shadow-card">
+              <div class="card-map" >
+                  {% if address_detail != null%}
+                      <p id="noteIframe" hidden>{{address_detail.iframe}}</p>
+                  {%endif%}
+                  <div class="boder-map">
+                    <div id="idIframe">
+                      
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="pt-3">
+            <ul class="list-group box-shadow-card">
+              {% if address_detail != null%}
+              <li class="list-group-item">
+                <div class="phone-group d-flex align-items-center fw-bold fs-5">
+                  <div class="logo-phone me-2"></div>
+                  {{address_detail.phone1}}
+                </div>
+              </li>
+              {% endif %}
+              {% if address_detail.phone2 != ''%}
+              <li class="list-group-item">
+                <div class="phone-group d-flex align-items-center fw-bold fs-5">
+                  <div class="logo-phone me-2"></div>
+                  {{address_detail.phone2}}
+                </div>
+              </li>
+                {% endif %}
+            </ul>
+          </div>
+          <div class="pt-3">
+            <div class="card box-shadow-card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-center fs-4 fw-bolder">
+                  <div class="logo-service me-2"></div>
+                  Dịch vụ
+                </div>
+                <div class="card-text">
+                  <p>
+                      {% if address_detail.service != '' %}
+                        {{address_detail.service}}
+                      {% endif %}
+                      {% if address_detail.service == '' %}
+                          Không có Dịch vụ.
+                      {% endif %}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pt-3">
+            <div class="card box-shadow-card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-center fs-4 fw-bolder">
+                  <div class="logo-note me-2"></div> Ghi chú
+                </div>
+                <div class="card-text">
+                  <p>
+                    {% if address_detail.note != '' %}
+                      {{address_detail.note}}
+                    {% endif %}
+                    {% if address_detail.note == '' %}
+                        Không có ghi chú.
+                    {% endif %}
+                </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8 col-md-12">
+            <div class="row mb-5">
+                {% if user.id == address_detail.idHost  %}
+                <div class="d-flex aligns-items-center justify-content-center col-md-6 col-lg-4 p-3">
+                    <div class="card box-shadow-card" style="width: 22rem;">
+                      <a><img style="padding: 8px;" src="https://png.pngtree.com/png-vector/20190217/ourlarge/pngtree-vector-add-icon-png-image_555576.jpg" class="card-img-top" data-bs-toggle="modal" data-bs-target="#modaledit"/></a>
+                    </div>
+                </div>
+                {% endif %}
+                {% for i in pitches %}
+                <div class="d-flex aligns-items-center justify-content-center col-md-6 col-lg-4 p-3">
+                    <div class="card box-shadow-card" style="width: 22rem;">
+                      <img style="padding: 8px;" src="https://phuongthanhngoc.com/media/data/phu-kien-san-bong/phu-kien-san-bong.jpg" class="card-img-top" alt="Sunset Over the Sea"/>
+                      <div class="card-body">
+                          <div style="font-weight: bold;" class="pb-2 card-title">
+                            {{address_detail.name}} - {{i.name}}
+                          </div>
+                          <div class="pb-2 card-content">
+                            <i class="fa-solid fa-user"></i>
+                            {{i.kind}} người
+                          </div>
+                          <div class="d-flex justify-content-between">
+                              <a href="/pitch-detail/{{address_detail.id}}/{{i.id}}"><button class="btn btn-success btn-sm" >Xem khung giờ</button></a>
+                              
+                              <p>
+                                <a style="color: black;" data-bs-toggle="collapse" href="#multiCollapse{{i.id}}" role="button" aria-expanded="false" aria-controls="multiCollapse{{i.id}}"><i class="fa-solid fa-ellipsis-vertical"></i></a>
+                              </p>
+                          </div>
+                          <div class="row mt-2">
+                            <div class="col">
+                              <div class="collapse multi-collapse" id="multiCollapse{{i.id}}">
+                                <div class="card card-body">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modaledit{{i.id}}">
+                                        Chỉnh sửa
+                                    </button>
+                                    <a class="btn btn-danger btn-sm mt-2" onclick="var result = confirm('Bạn muốn xóa {{i.name}} không?'); if(result) {document.getElementById('lnk{{i.id}}').click();}">Xóa</a>
+                                    <a id="lnk{{i.id}}" href="/deletePitch/{{i.id}}" hidden>Xóa</a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+                <!-- modal update pitch -->
+                <div class="modal fade" id="modaledit{{i.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="staticBackdropLabel">Chỉnh sửa thông tin sân bóng</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <form action="{{url_for('crud.updatePitch')}}" id="update-pitch-form{{i.id}}" method="post">
+                
+                            <div class="row mb-3">
+                                <div class="form-outline">
+                                    <input name="id" type="text" value="{{i.id}}" hidden>
+                                    <input name="idAddress" type="text" value="{{address_detail.id}}" hidden>
+                                    <input name="idHost" type="text" value="{{address_detail.idHost}}" hidden>
+                                    <label class="form-label" for="name">Sân số: (<span style="color: red;">*</span>): </label>
+                                    <input name="name" type="text" id="name" class="form-control form-control-md" value="{{i.name}}" />
+                                </div>
+                            </div>
+                
+                            <div class="row mb-3">
+                                <div class="form-outline">
+                                    <label class="form-label select-label">Chọn loại sân</label>
+                                    <select name="kind" class="select form-control-md">
+                                        <option value="0" disabled>Chọn loại sân</option>
+                                        <option value="5">Sân 5 người</option>
+                                        <option value="7">Sân 7 người</option>
+                                        <option value="11">Sân 11 người</option>
+                                      </select>
+                                </div>
+                            </div>
+                
+                
+                            <p class="text-center" style="color: red; font-weight: bold;" id="mess-error{{i.id}}"></p>
+                
+                            <div class="mt-2 pt-2">
+                              <input class="btn btn-dark btn-md" type="submit" value="Cập nhật" id="updateForm{{i.id}}" onclick="sayHi(event); child1 = this.parentElement; child2 = child1.parentElement.id.value; var idform = '#update-pitch-form'+child2; $.post('/updatePitch', data=$(idform).serialize(), function(data) {if (data.status == 'ok1') {$('#modaledit'+data.id).modal('hide');location.reload();}else {$('#mess-error'+data.id).text(data.mess)}});" />
+                            </div>
+                
+                          </form>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+            </div>
+            <hr>
+            {% if address_detail != null %}
+              <p class="fs-4 fw-bolder">Sân bóng đá gần {{address_detail.name}}</p>
+            {% endif %}
+            <div class="row">
+              {% for i in all_near_address %}
+              <div class="d-flex aligns-items-center justify-content-center col-md-6 col-lg-4 p-3">
+                  <div class="card box-shadow-card" style="width: 22rem;">
+                    <a href="/address-detail/{{i[0]}}"><img style="padding: 8px;" src="https://phuongthanhngoc.com/media/data/phu-kien-san-bong/phu-kien-san-bong.jpg" class="card-img-top" alt="Sunset Over the Sea"/></a>                    <div class="card-body">
+                        <div style="font-weight: bold;" class="pb-2 card-title">
+                          {{i[1]}}
+                        </div>
+                        <div class="pb-2 card-content">
+                          <i class="fa-solid fa-user"></i>
+                          {{i[2]}} người
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="/address-detail/{{i[0]}}"><button class="btn btn-success btn-sm" >&nbsp &nbsp <i class="fa-solid fa-angles-right"></i> &nbsp &nbsp</button></a>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+              {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- modal add pitch -->
+<div class="modal fade" id="modaledit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Thêm sân bóng</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{url_for('crud.addPitch')}}" id="add-pitch-form" method="post">
+
+            <div class="row mb-3">
+                <div class="form-outline">
+                    <input name="idAddress" type="text" value="{{address_detail.id}}" hidden>
+                    <input name="idHost" type="text" value="{{address_detail.idHost}}" hidden>
+                    <label class="form-label" for="name">Sân số: (<span style="color: red;">*</span>): </label>
+                    <input name="name" type="text" id="name" class="form-control form-control-md" value="" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="form-outline">
+                    <label class="form-label select-label">Chọn loại sân</label>
+                    <select name="kind" class="select form-control-md">
+                        <option value="0" disabled>Chọn loại sân</option>
+                        <option value="5">Sân 5 người</option>
+                        <option value="7">Sân 7 người</option>
+                        <option value="11">Sân 11 người</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <p class="text-center" style="color: red; font-weight: bold;" id="mess-error"></p>
+
+            <div class="mt-2 pt-2">
+              <input class="btn btn-dark btn-md" type="submit" value="Thêm" id="submitForm" />
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+
+    const textt = document.getElementById('noteIframe')
+
+    const iframeDom = document.getElementById('idIframe')
+
+    
+    iframeDom.innerHTML = textt.textContent
+    iframeDom.appendChild(textt)
+
+    $('#submitForm').click(function(event) {
+    event.preventDefault();
+    $.post('/addPitch', data=$('#add-pitch-form').serialize(), function(data) {
+        if (data.status == 'ok') {
+            $('#modaledit').modal('hide');
+            location.reload();
+        }else {
+            $('#mess-error').text(data.mess)
+        }
+        });
+    })
+
+    function sayHi(e) {
+        e.preventDefault();
+    }
+
+</script>
+{% endblock %}

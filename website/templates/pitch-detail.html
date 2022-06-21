@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+{% block title %} Trang chủ {% endblock %}
+{% block content %}
+
+
+<!-- <hr> -->
+<div class="container-fluid mt-2 pb-5" style="background-color: #f5f5f5;">
+    <div class="heading-address d-flex justify-content-center" style="background-color: white">
+        <div>
+          <p class="fs-1 fw-bolder d-flex justify-content-center align-items-center" style="color: black;">
+          {% if address_detail != null %}
+          {{address_detail.name}}
+          {% endif %}
+          </p>
+          <div class="d-flex justify-content-center align-items-center fw-bolder">
+            <div class="logo-location"></div>
+            <a
+              style="text-decoration: none; color:black"
+              {% if address_detail != null %}
+                  href="{{address_detail.linkAddress}}"
+              {%endif%}
+              >
+              {% if address_detail != null%}
+                  {{address_detail.address}}
+              {% endif %}
+            </a>
+          </div>
+        </div>
+    </div>
+    <!-- <hr> -->
+    <div class="row mt-5" style="background-color: #f5f5f5;">
+        <div class="col-lg-4 col-md-12 mb-5">
+            <div class="pt-3">
+              <div class="card box-shadow-card">
+                <div class="card-map" >
+                    {% if address_detail != null%}
+                        <p id="noteIframe" hidden>{{address_detail.iframe}}</p>
+                    {%endif%}
+                  <div class="boder-map">
+
+                    <div id="idIframe">
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pt-3">
+              <ul class="list-group box-shadow-card">
+                {% if address_detail != null%}
+                <li class="list-group-item">
+                  <div class="phone-group d-flex align-items-center fw-bold fs-5">
+                    <div class="logo-phone me-2"></div>
+                    {{address_detail.phone1}}
+                  </div>
+                </li>
+                {% endif %}
+                {% if address_detail.phone2 != ''%}
+                <li class="list-group-item">
+                  <div class="phone-group d-flex align-items-center fw-bold fs-5">
+                    <div class="logo-phone me-2"></div>
+                    {{address_detail.phone2}}
+                  </div>
+                </li>
+                  {% endif %}
+              </ul>
+            </div>
+            <div class="pt-3">
+              <div class="card box-shadow-card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-center fs-4 fw-bolder">
+                    <div class="logo-service me-2"></div>
+                    Dịch vụ
+                  </div>
+                  <div class="card-text">
+                    <p>
+                        {% if address_detail.service != '' %}
+                          {{address_detail.service}}
+                        {% endif %}
+                        {% if address_detail.service == '' %}
+                            Không có Dịch vụ.
+                        {% endif %}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pt-3">
+              <div class="card box-shadow-card">
+                <div class="card-body">
+                  <div class="card-title d-flex align-items-center fs-4 fw-bolder">
+                    <div class="logo-note me-2"></div> Ghi chú
+                  </div>
+                  <div class="card-text">
+                    <p>
+                      {% if address_detail.note != '' %}
+                        {{address_detail.note}}
+                      {% endif %}
+                      {% if address_detail.note == '' %}
+                          Không có ghi chú.
+                      {% endif %}
+                  </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-lg-8 col-md-12 mb-5">
+            {% if pitch_detail != null %}
+            <p class="fs-2 fw-bolder d-flex justify-content-center mb-5 heading">
+                {{pitch_detail.name}} - Loại sân: {{pitch_detail.kind}} người
+            </p>
+            {% endif %}
+            <p class="fs-5 fw-bolder" >Khung giờ</p>
+            <table class="table border-table mb-3">
+                <tbody style="background-color: white;">
+                    {% for i in times %}
+                        <tr>
+                            <td>Từ {{i.timeS}} - {{i.timeE}}</td>
+                            <td style="font-weight: bold;">{{i.cost}}đ</td>
+                            {% if user.id == address_detail.idHost %}
+                            <td>
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modaledit{{i.id}}">
+                                    Chỉnh sửa
+                                </button>
+                                <a class="btn btn-danger btn-sm" onclick="var result = confirm('Bạn muốn xóa không?'); if(result) {document.getElementById('lnk{{i.id}}').click();}">Xóa</a>
+                                <a id="lnk{{i.id}}" href="/deleteTime/{{i.id}}" hidden>Xóa</a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                    <!-- Modal update time -->
+                    <div class="modal fade" id="modaledit{{i.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="staticBackdropLabel">Chỉnh sửa thông tin khung giờ</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{url_for('crud.updateTime')}}" id="update-time-form{{i.id}}" method="post">
+                                    <input type="hidden" name="id" value="{{i.id}}">
+                                    <input id="idPitch" type="hidden" name="idPitch" value="{{pitch_detail.id}}">
+                                    <input id="idAddress" type="hidden" name="idAddress" value="{{address_detail.id}}">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="timeS">Giờ bắt đầu(<span style="color: red;">*</span>): </label>
+                                                <input name="timeS" type="text" id="timeS" class="form-control form-control-md" placeholder="VD: 16:00" value="{{i.timeS}}" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="timeE">Giờ kết thúc(<span style="color: red;">*</span>): </label>
+                                                <input name="timeE" type="text" id="timeE" class="form-control form-control-md" placeholder="VD: 18:00" value="{{i.timeE}}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="cost">Giá tiền(<span style="color: red;">*</span>): </label>
+                                                <input name="cost" type="number" id="cost" class="form-control form-control-md" placeholder="VD: 200.000" value="{{i.cost}}" />
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                        
+                                    <p class="text-center" style="color: red; font-weight: bold;" id="mess-error{{i.id}}"></p>
+                        
+                                    <div class="mt-2 pt-2">
+                                      <input class="btn btn-dark btn-md" type="submit" value="Cập nhật" id="submitFormUpdateTime{{i.id}}" onclick="sayHi(event); var child1 = this.parentElement; child2 = (child1.parentElement).getElementsByTagName('input')[0].value; var idform = '#update-time-form'+child2; $.post('/updateTime', data=$(idform).serialize(), function(data) {if (data.status == 'ok1') {$('#modaledit'+data.id).modal('hide');location.reload();}else {$('#mess-error'+data.id).text(data.mess)}});"  />
+                                    </div>
+                        
+                                  </form>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if user.id == address_detail.idHost %}
+            <div class="d-flex flex-row-reverse pb-2">
+                <button type="button" class="btn btn-dark btn-sm border-table" data-bs-toggle="modal" data-bs-target="#modaledit">
+                    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <i class="fa-solid fa-calendar-plus"></i> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+                </button>
+            </div>
+            {% endif %}
+            <hr>
+            <p class="fs-5 fw-bolder">Tìm sân trống</p>
+            <form class="mb-5 border-custom" action="{{url_for('views.pitch_detail', idAddress = address_detail.id, idPitch = pitch_detail.id)}}" method="post">
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-outline">
+                            <label class="form-label" for="filter_date_from">Từ ngày: </label>
+                            <input name="filter_date_from" type="date" id="filter_date_from" class="form-control form-control-md" placeholder="VD: 16:00"  min="{{value_filter_date_min}}" value="{{value_filter_date_from}}" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-outline">
+                            <label class="form-label" for="filter_date_to">Đến ngày: </label>
+                            <input name="filter_date_to" type="date" id="filter_date_to" class="form-control form-control-md" placeholder="VD: 18:00" min="{{value_filter_date_min}}" value="{{value_filter_date_to}}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-outline">
+                            <label class="form-label" for="filter_time_S">Giờ bắt đầu: </label>
+                            <input name="filter_time_S" type="text" id="filter_time_S" class="form-control form-control-md" placeholder="VD: 16:00" value="{{value_filter_time_S}}" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-outline">
+                            <label class="form-label" for="filter_time_E">Giờ kết thúc: </label>
+                            <input name="filter_time_E" type="text" id="filter_time_E" class="form-control form-control-md" placeholder="VD: 18:00" value="{{value_filter_time_E}}" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- <input class="btn custom-btn btn-md" type="submit" value="Thiết lập" /> -->
+                <button class="btn custom-btn btn-sm" type="submit">&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <i class="fa-solid fa-filter"></i> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</button>
+            </form>
+            <hr>
+            <p class="fs-5 fw-bolder">Danh sách khung giờ trống</p>
+            <form class="mb-5 border-custom" action="" id="find-pitch-form" method="post">
+                <div style="background-color: white;" class="scroll-it border-table">
+                    {% for j in dates %}
+                    <div class="item">
+                        <div class="item-main p-2">
+                            <span class="fw-bolder">{{j}}</span>
+                        </div>
+                        <div class="item-content">
+                            <ul class="list-group">
+                                {% for i in times %}
+                                    {% for x in all_match_accept %}
+                                        {% if x[1] == i.id and x[0] == j %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><input value="" data-cost="{{i.cost}}" data-id="{{i.id}}" data-date="{{j}}" data-timeS="{{i.timeS}}" data-timeE="{{i.timeE}}" class="form-check-input" type="radio" name="date"> {{i.timeS}} - {{i.timeE}}</span>
+                                                <span class="badge bg-primary rounded-pill">{{i.cost}}đ</span>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="mt-2 pt-2">
+                    <!-- <input class="btn btn-success btn-sm custom-btn" style="font-weight: 600;" type="button" value="Đặt sân" onclick="btn_book();" /> -->
+                    <button class="btn btn-success btn-sm custom-btn" type="button" onclick="btn_book();">&nbsp &nbsp &nbsp &nbsp Đặt sân &nbsp &nbsp &nbsp &nbsp</button>
+                </div>
+            </form>
+            <hr>
+            {% if address_detail != null %}
+                <p class="fs-5 fw-bolder">Sân bóng đá gần {{address_detail.name}}</p>
+            {% endif %}
+            <div class="row">
+                {% for i in all_near_address %}
+                <div class="d-flex aligns-items-center justify-content-center col-md-6 col-lg-4 p-3">
+                    <div class="card box-shadow-card" style="width: 22rem;">
+                    <a href="/address-detail/{{i[0]}}"><img style="padding: 8px;" src="https://phuongthanhngoc.com/media/data/phu-kien-san-bong/phu-kien-san-bong.jpg" class="card-img-top" alt="Sunset Over the Sea"/></a>                    <div class="card-body">
+                        <div style="font-weight: bold;" class="pb-2 card-title">
+                            {{i[1]}}
+                        </div>
+                        <div class="pb-2 card-content">
+                            <i class="fa-solid fa-user"></i>
+                            {{i[2]}} người
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="/address-detail/{{i[0]}}"><button class="btn btn-success btn-sm custom-btn" >&nbsp &nbsp &nbsp &nbsp <i class="fa-solid fa-angles-right"></i> &nbsp &nbsp &nbsp &nbsp</button></a>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal add time -->
+<div class="modal fade" id="modaledit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Thêm khung giờ cho sân</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{url_for('crud.addTime')}}" id="add-time-form" method="post">
+            <input type="hidden" name="idPitch" value="{{pitch_detail.id}}">
+            <input type="hidden" name="idAddress" value="{{address_detail.id}}">
+            <div class="row mb-3">
+                <div class="col-md-6 mb-3">
+                    <div class="form-outline">
+                        <label class="form-label" for="timeS">Giờ bắt đầu(<span style="color: red;">*</span>): </label>
+                        <input name="timeS" type="text" id="timeS" class="form-control form-control-md" placeholder="VD: 16:00" value="" />
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-outline">
+                        <label class="form-label" for="timeE">Giờ kết thúc(<span style="color: red;">*</span>): </label>
+                        <input name="timeE" type="text" id="timeE" class="form-control form-control-md" placeholder="VD: 18:00" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6 mb-3">
+                    <div class="form-outline">
+                        <label class="form-label" for="cost">Giá tiền(<span style="color: red;">*</span>): </label>
+                        <input name="cost" type="number" id="cost" class="form-control form-control-md" placeholder="VD: 200.000" value="" />
+                    </div>
+                </div>
+                
+            </div>
+
+            <p class="text-center" style="color: red; font-weight: bold;" id="mess-error"></p>
+
+            <div class="mt-2 pt-2">
+              <input class="btn btn-dark btn-md" type="submit" value="Thêm" id="submitFormAddTime" />
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- modal datsan -->
+<div class="modal fade" id="modalbookpitch" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="staticBackdropLabel">{{address_detail.name}}</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form action="{{url_for('crud.addMatch')}}" id="find-pitch-form" method="post">
+                <input name="idTime" type="hidden" value="" id="idTime">
+                <input name="idMember" type="hidden" value="{{user.id}}">
+                <input name="idPitch" type="hidden" value="{{pitch_detail.id}}">
+                <input name="idAddress" type="hidden" value="{{address_detail.id}}">
+                <div class="dont-scroll-it">
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="form-outline">
+                                <label class="form-label" for="dateTakePlace">Ngày đá: </label>
+                                <input  type="text" class="form-control form-control-sm" id="dateTakePlace" value="" disabled />
+                                <input name="dateTakePlace" type="text" class="form-control form-control-sm" id="dateTakePlace1" value="" hidden />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="form-outline">
+                                <label class="form-label" for="timeTakePlace">Giờ đá: </label>
+                                <input name="timeTakePlace" type="text" id="timeTakePlace" class="form-control form-control-sm" value="" disabled />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="form-outline">
+                                <label class="form-label" for="costTakePlace">Giá: </label>
+                                <input name="costTakePlace" type="text" id="costTakePlace" class="form-control form-control-sm" value="" disabled />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="form-outline">
+                                <label class="form-label" for="costTakePlace">Giờ đàm phán: </label>
+                                <textarea name="note" class="form-control form-control-sm" id="note" rows="3" placeholder="Bạn muốn thêm giờ hoặc điều chỉnh giờ? Hãy điền thông tin ở đây, chúng tôi sẽ liên lạc lại." ></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="mt-2">Thông tin người đặt sân</h6>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="form-outline">
+                                <input name="name" type="text" id="name" class="form-control form-control-sm" value="{{user.fullname}}" hidden/>
+                                <input type="text" class="form-control form-control-sm" value="{{user.fullname}}" disabled/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="form-outline">
+                                <input name="phone" type="tel" id="phone" class="form-control form-control-sm" value="{{user.phonenumber}}" hidden/>
+                                <input type="tel" disabled class="form-control form-control-sm" value="{{user.phonenumber}}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="form-outline">
+                                <input name="phonebackup" type="tel" id="phonebackup" class="form-control form-control-sm" placeholder="Số điện thoại dự phòng" value=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <div class="form-outline">
+                                <input name="email" type="email" id="email" class="form-control form-control-sm" value="{{user.email}}" hidden/>
+                                <input type="email" class="form-control form-control-sm" value="{{user.email}}" disabled/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2 pt-2">
+                    <input class="btn btn-warning btn-md" style="font-weight: 600;" type="submit" value="Đặt sân" id="submitTimSan" onclick="" />
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button id="btn_back" type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modalTimSan" data-bs-dismiss="modal" >Quay lại</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+
+    const textt = document.getElementById('noteIframe')
+
+    const iframeDom = document.getElementById('idIframe')
+
+    iframeDom.innerHTML = textt.textContent
+
+    function btn_book(){
+        const checked_date = document.querySelector('input[name = "date"]:checked');
+        const timeTakePlace = document.querySelector('#timeTakePlace');
+        const costTakePlace = document.querySelector('#costTakePlace');
+        const dateTakePlace = document.querySelector('#dateTakePlace');
+        const dateTakePlace1 = document.querySelector('#dateTakePlace1');
+        const idTime = document.querySelector('#idTime');
+        
+        if(checked_date != null){
+            
+            $('#modalTimSan').modal('hide');
+            $('#modalbookpitch').modal('show');
+            idTime.value = checked_date.getAttribute('data-id')
+            timeTakePlace.value = checked_date.getAttribute('data-timeS') + '-' + checked_date.getAttribute('data-timeE')
+            dateTakePlace.value = checked_date.getAttribute('data-date')
+            dateTakePlace1.value = checked_date.getAttribute('data-date')
+            costTakePlace.value = checked_date.getAttribute('data-cost')
+        } else {
+            alert('Bạn chưa chọn khung giờ.');
+        }
+    }
+
+    $('#submitFormAddTime').click(function(event) {
+    event.preventDefault();
+    $.post('/addTime', data=$('#add-time-form').serialize(), function(data) {
+        if (data.status == 'ok') {
+            $('#modaledit').modal('hide');
+            location.reload();
+        }else {
+            $('#mess-error').text(data.mess)
+        }
+        });
+    })
+
+    function sayHi(e) {
+        e.preventDefault();
+    }
+
+    function getDaysInMonth(year, month) {
+        return new Date(year, month, 0).getDate();
+    }
+
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %} Hóa đơn {% endblock %}
+{% block content %}
+
+<div class="container">
+    <section class="section-content py-3">
+        <div class="row">
+            <main class="col-lg-12">
+                <div class="table-responsive table-scroll">
+                    <table class="table styled-table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Tên địa điểm</th>
+                            <th scope="col">Tên sân</th>
+                            <th scope="col">Khung giờ</th>
+                            <th scope="col">Ngày đặt</th>
+                            <th scope="col">Tiền đặt cọc</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            
+                            {% for match, address, member, time, pitch, bill in all_bills %}
+                            <tr>
+                                <th> <a class="name-link" href="/address-detail/{{address.id}}">{{address.name}}</a></th>
+                                <td>{{pitch.name}}</td>
+                                <td>{{time.timeS}} - {{time.timeE}}</td>
+                                <td>{{match.date}}</td>
+                                <td>{{bill.cost}}đ</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </section>
+    
+</div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script>
+</script>
+{% endblock %}
+
